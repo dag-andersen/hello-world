@@ -22,10 +22,6 @@ concurrency:
   group: "hello"
   cancel-in-progress: true
 
-env:
-  APP-VERSION: ${{ github.run_id }}
-  ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '' || 'dev-' }}
-
 jobs:
   client:
     environment: stage
