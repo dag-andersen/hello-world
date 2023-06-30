@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - "src/**"
       - ".github/workflows/ci.yml"
@@ -11,7 +11,7 @@ on:
       - "Dockerfile"
   push:
     branches:
-      - master
+      - main
     paths:
       - "src/**"
       - ".github/workflows/ci.yml"
@@ -24,7 +24,7 @@ concurrency:
 
 env:
   APP-VERSION: ${{ github.run_id }}
-  ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && '' || 'dev-' }}
+  ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && '' || 'dev-' }}
 
 jobs:
   client:
