@@ -19,7 +19,7 @@ on:
       - "Dockerfile"
 
 jobs:
-  client:
+  docker-build:
     environment: stage
     runs-on: ubuntu-latest
     env:
