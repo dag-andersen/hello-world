@@ -1,4 +1,4 @@
-name: CI
+name: image-updater
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - "src/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/image-updater.yml"
       - "Cargo.toml"
       - "Dockerfile"
   push:
@@ -14,13 +14,9 @@ on:
       - main
     paths:
       - "src/**"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/image-updater.yml"
       - "Cargo.toml"
       - "Dockerfile"
-
-concurrency:
-  group: "hello"
-  cancel-in-progress: true
 
 jobs:
   client:
@@ -40,13 +36,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
+
       - name: Generate build ID
         id: prep
         run: |
-            branch=${GITHUB_REF##*/}
-            sha=${GITHUB_SHA::8}
-            ts=$(date +%s)
-            echo "::set-output name=BUILD_ID::${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-${sha}-${ts}" 
+          branch=${GITHUB_REF##*/}
+          sha=${GITHUB_SHA::8}
+          ts=$(date +%s)
+          echo "::set-output name=BUILD_ID::${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-${sha}-${ts}"
 
       - name: Build and publish container image with tag
         uses: docker/build-push-action@v4
@@ -55,4 +52,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}  
+            ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
