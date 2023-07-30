@@ -18,10 +18,6 @@ on:
       - "Cargo.toml"
       - "Dockerfile"
 
-env:
-  APP-VERSION: ${{ github.run_id }}
-  IMAGE_NAME: dagandersen/visma-sre
-
 permissions: write-all
 
 jobs:
@@ -29,7 +25,7 @@ jobs:
     environment: stage
     runs-on: ubuntu-latest
     env:
-      IMAGE: dagandersen/visma-sre
+      IMAGE: dagandersen/hello-world
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -56,7 +52,7 @@ jobs:
           branch=${GITHUB_REF##*/}
           sha=${GITHUB_SHA::8}
           ts=$(date +%s)
-          echo "::set-output name=BUILD_ID::${branch}-${sha}-${ts}"
+          echo "BUILD_ID=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-${sha}-${ts}" >> "$GITHUB_OUTPUT"
 
       - name: Build and publish container image with tag
         uses: docker/build-push-action@v4
@@ -79,7 +75,7 @@ jobs:
         name: "Update image tag using Kustomize"
         run: |
 
-          cd k8s/dummy-pdf-or-png
+          cd k8s/hello-world
           kustomize edit set image ${{ env.IMAGE }}:${{ steps.prep.outputs.BUILD_ID }}
           git add kustomization.yml
           cd ../..

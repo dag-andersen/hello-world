@@ -43,7 +43,7 @@ jobs:
           branch=${GITHUB_REF##*/}
           sha=${GITHUB_SHA::8}
           ts=$(date +%s)
-          echo "::set-output name=BUILD_ID::${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-${sha}-${ts}"
+          echo "BUILD_ID=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'prod' || 'dev' }}-${sha}-${ts}" >> "$GITHUB_OUTPUT"
 
       - name: Build and publish container image with tag
         uses: docker/build-push-action@v4
